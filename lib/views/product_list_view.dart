@@ -41,57 +41,79 @@ class _ProductListViewState extends State<ProductListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Products')),
-      body: Obx(() {
-        switch (controller.state.value) {
-          case LoaderState.initial:
-          case LoaderState.loading:
-            return const Center(child: CircularProgressIndicator());
-
-          case LoaderState.error:
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Failed to load products'),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: controller.fetchProducts,
-                    child: const Text('Retry'),
-                  ),
-                ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            child: TextField(
+              onChanged: controller.searchProducts,
+              decoration: InputDecoration(
+                hintText: 'Search products',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            );
+            ),
+          ),
 
-          case LoaderState.empty:
-            return const Center(child: Text('No products found'));
+          Expanded(
+            child: Obx(() {
+              switch (controller.state.value) {
+                case LoaderState.initial:
+                case LoaderState.loading:
+                  return const Center(child: CircularProgressIndicator());
 
-          case LoaderState.success:
-            return ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount:
-                  controller.products.length +
-                  (controller.isLoadingMore.value ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == controller.products.length) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(child: CircularProgressIndicator()),
+                case LoaderState.error:
+                  return Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Failed to load products'),
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          onPressed: controller.fetchProducts,
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
                   );
-                }
 
-                final product = controller.products[index];
+                case LoaderState.empty:
+                  return const Center(child: Text('No products found'));
 
-                return ProductCard(
-                  product: product,
-                  onTap: () {
-                    Get.to(() => ProductDetailView(productId: product.id));
-                  },
-                );
-              },
-            );
-        }
-      }),
+                case LoaderState.success:
+                  return ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16),
+                    itemCount:
+                        controller.products.length +
+                        (controller.isLoadingMore.value ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index == controller.products.length) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+
+                      final product = controller.products[index];
+
+                      return ProductCard(
+                        product: product,
+                        onTap: () {
+                          Get.to(
+                            () => ProductDetailView(productId: product.id),
+                          );
+                        },
+                      );
+                    },
+                  );
+              }
+            }),
+          ),
+        ],
+      ),
     );
   }
 }

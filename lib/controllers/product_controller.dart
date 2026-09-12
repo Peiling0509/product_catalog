@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 
 import '../data/models/product.dart';
@@ -15,18 +17,27 @@ class ProductController extends GetxController {
   final state = LoaderState.initial.obs;
   final detailState = LoaderState.initial.obs;
 
+  // for infinite scroll pagination
   final isLoadingMore = false.obs;
-
   final hasMore = true.obs;
-
   int _skip = 0;
-
   static const int _limit = 20;
+
+  // for debounced search
+  final searchQuery = ''.obs;
+  final isSearching = false.obs;
+  Timer? _searchDebounce;
 
   @override
   void onInit() {
     super.onInit();
     fetchProducts();
+  }
+
+  @override
+  void onClose() {
+    _searchDebounce?.cancel();
+    super.onClose();
   }
 
   Future<void> fetchProducts() async {
@@ -52,6 +63,10 @@ class ProductController extends GetxController {
   }
 
   Future<void> loadMoreProducts() async {
+    if (searchQuery.value.isNotEmpty) {
+      return;
+    }
+
     if (isLoadingMore.value || !hasMore.value) {
       return;
     }
@@ -89,4 +104,38 @@ class ProductController extends GetxController {
     }
   }
 
+  void searchProducts(String query) {
+    searchQuery.value = query;
+    _searchDebounce?.cancel();
+    if (query.trim().isEmpty) {
+      fetchProducts();
+      return;
+    }
+    _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+      _performSearch(query.trim());
+    });
+  }
+
+  Future<void> _performSearch(String query) async {
+    isSearching.value = true;
+    hasMore.value = false;
+
+    state.value = LoaderState.loading;
+
+    try {
+      final result = await _apiService.searchProducts(query);
+
+      if (result.isEmpty) {
+        products.clear();
+        state.value = LoaderState.empty;
+      } else {
+        products.assignAll(result);
+        state.value = LoaderState.success;
+      }
+    } catch (e) {
+      state.value = LoaderState.error;
+    } finally {
+      isSearching.value = false;
+    }
+  }
 }
