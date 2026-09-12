@@ -4,8 +4,37 @@ import 'package:get/get.dart';
 import '../controllers/product_controller.dart';
 import '../widgets/product_card.dart';
 
-class ProductListView extends GetView<ProductController> {
+class ProductListView extends StatefulWidget {
   const ProductListView({super.key});
+
+  @override
+  State<ProductListView> createState() => _ProductListViewState();
+}
+
+class _ProductListViewState extends State<ProductListView> {
+  late final ScrollController _scrollController;
+
+  ProductController get controller => Get.find<ProductController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      controller.loadMoreProducts();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +66,19 @@ class ProductListView extends GetView<ProductController> {
 
           case LoaderState.success:
             return ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.all(16),
-              itemCount: controller.products.length,
+              itemCount:
+                  controller.products.length +
+                  (controller.isLoadingMore.value ? 1 : 0),
               itemBuilder: (context, index) {
+                if (index == controller.products.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
                 final product = controller.products[index];
 
                 return ProductCard(product: product);

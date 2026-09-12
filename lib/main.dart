@@ -19,7 +19,7 @@ class ProductCatalogApp extends StatelessWidget {
       initialBinding: BindingsBuilder(() {
         Get.put(ProductController());
       }),
-      home: const ProductListView(),
+      home: ProductListView(),
     );
   }
 }
