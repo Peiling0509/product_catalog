@@ -56,82 +56,91 @@ class _ProductDetailViewState extends State<ProductDetailView> {
           case LoaderState.success:
             final product = controller.productDetails.value!;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Image
-                  SizedBox(
-                    height: 200,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: product.images.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 12),
-                      itemBuilder: (context, index) {
-                        return ProductImage(
-                          imageUrl: product.images[index],
-                          width: 200,
-                          height: 200,
-                        );
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Title
-                  Text(
-                    product.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Rating
-                  Row(
-                    children: [
-                      const Icon(Icons.star, color: Colors.amber),
-                      const SizedBox(width: 4),
-                      Text(
-                        product.rating.toStringAsFixed(1),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+            return RefreshIndicator(
+              onRefresh: () {
+                return controller.fetchProductDetails(widget.productId);
+              },
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Image
+                    SizedBox(
+                      height: 200,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: product.images.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        itemBuilder: (context, index) {
+                          return ProductImage(
+                            imageUrl: product.images[index],
+                            width: 200,
+                            height: 200,
+                          );
+                        },
                       ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Price
-                  Text(
-                    '\$${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
 
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 20),
 
-                  // Description
-                  const Text(
-                    'Description',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
+                    // Title
+                    Text(
+                      product.title,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
 
-                  const SizedBox(height: 8),
+                    const SizedBox(height: 12),
 
-                  Text(
-                    product.description,
-                    style: const TextStyle(fontSize: 16, height: 1.5),
-                  ),
-                ],
+                    // Rating
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber),
+                        const SizedBox(width: 4),
+                        Text(
+                          product.rating.toStringAsFixed(1),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Price
+                    Text(
+                      '\$${product.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Description
+                    const Text(
+                      'Description',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Text(
+                      product.description,
+                      style: const TextStyle(fontSize: 16, height: 1.5),
+                    ),
+                  ],
+                ),
               ),
             );
         }

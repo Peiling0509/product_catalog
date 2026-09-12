@@ -43,6 +43,8 @@ class ProductController extends GetxController {
   Future<void> fetchProducts() async {
     state.value = LoaderState.loading;
 
+    //Refresh always resets the list to the default product catalog.
+    searchQuery.value = '';
     _skip = 0;
     hasMore.value = true;
 

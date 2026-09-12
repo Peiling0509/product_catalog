@@ -83,31 +83,34 @@ class _ProductListViewState extends State<ProductListView> {
                   return const Center(child: Text('No products found'));
 
                 case LoaderState.success:
-                  return ListView.builder(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.all(16),
-                    itemCount:
-                        controller.products.length +
-                        (controller.isLoadingMore.value ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == controller.products.length) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      }
-
-                      final product = controller.products[index];
-
-                      return ProductCard(
-                        product: product,
-                        onTap: () {
-                          Get.to(
-                            () => ProductDetailView(productId: product.id),
+                  return RefreshIndicator(
+                    onRefresh: controller.fetchProducts,
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.all(16),
+                      itemCount:
+                          controller.products.length +
+                          (controller.isLoadingMore.value ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == controller.products.length) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Center(child: CircularProgressIndicator()),
                           );
-                        },
-                      );
-                    },
+                        }
+                    
+                        final product = controller.products[index];
+                    
+                        return ProductCard(
+                          product: product,
+                          onTap: () {
+                            Get.to(
+                              () => ProductDetailView(productId: product.id),
+                            );
+                          },
+                        );
+                      },
+                    ),
                   );
               }
             }),
