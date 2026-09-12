@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:product_catalog/views/product_detail_view.dart';
 
 import '../controllers/product_controller.dart';
 import '../widgets/product_card.dart';
@@ -81,7 +82,12 @@ class _ProductListViewState extends State<ProductListView> {
 
                 final product = controller.products[index];
 
-                return ProductCard(product: product);
+                return ProductCard(
+                  product: product,
+                  onTap: () {
+                    Get.to(() => ProductDetailView(productId: product.id));
+                  },
+                );
               },
             );
         }

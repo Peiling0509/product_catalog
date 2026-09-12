@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../data/models/product.dart';
+import '../data/models/product_details.dart';
 import '../data/services/product_api_service.dart';
 
 enum LoaderState { initial, loading, success, error, empty }
@@ -9,8 +10,10 @@ class ProductController extends GetxController {
   final ProductApiService _apiService = ProductApiService();
 
   final products = <Product>[].obs;
+  final productDetails = Rxn<ProductDetails>();
 
   final state = LoaderState.initial.obs;
+  final detailState = LoaderState.initial.obs;
 
   final isLoadingMore = false.obs;
 
@@ -72,4 +75,18 @@ class ProductController extends GetxController {
       isLoadingMore.value = false;
     }
   }
+
+  Future<void> fetchProductDetails(int id) async {
+    detailState.value = LoaderState.loading;
+
+    try {
+      final result = await _apiService.getProductDetails(id);
+
+      productDetails.value = result;
+      detailState.value = LoaderState.success;
+    } catch (e) {
+      detailState.value = LoaderState.error;
+    }
+  }
+
 }
