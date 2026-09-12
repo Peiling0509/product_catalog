@@ -14,6 +14,7 @@ class ProductListView extends StatefulWidget {
 
 class _ProductListViewState extends State<ProductListView> {
   late final ScrollController _scrollController;
+  late final FocusNode _searchFocusNode;
 
   ProductController get controller => Get.find<ProductController>();
 
@@ -22,6 +23,7 @@ class _ProductListViewState extends State<ProductListView> {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+    _searchFocusNode = FocusNode();
   }
 
   void _onScroll() {
@@ -34,6 +36,7 @@ class _ProductListViewState extends State<ProductListView> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -43,15 +46,20 @@ class _ProductListViewState extends State<ProductListView> {
       appBar: AppBar(title: const Text('Products')),
       body: Column(
         children: [
+          //search bar
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: TextField(
+              focusNode: _searchFocusNode,
               onChanged: controller.searchProducts,
               decoration: InputDecoration(
                 hintText: 'Search products',
                 prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
                 ),
               ),
             ),
@@ -104,6 +112,7 @@ class _ProductListViewState extends State<ProductListView> {
                         return ProductCard(
                           product: product,
                           onTap: () {
+                            _searchFocusNode.unfocus();
                             Get.to(
                               () => ProductDetailView(productId: product.id),
                             );

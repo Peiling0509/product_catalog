@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'controllers/product_controller.dart';
+import 'core/app_theme.dart';
 import 'views/product_list_view.dart';
 
 void main() {
@@ -16,6 +17,7 @@ class ProductCatalogApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Product Catalog',
+      theme: AppTheme.lightTheme,
       initialBinding: BindingsBuilder(() {
         Get.put(ProductController());
       }),
