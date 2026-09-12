@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import 'controllers/product_controller.dart';
+import 'views/product_list_view.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProductCatalogApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ProductCatalogApp extends StatelessWidget {
+  const ProductCatalogApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Product Catalog'),
-        ),
-      ),
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Product Catalog',
+      initialBinding: BindingsBuilder(() {
+        Get.put(ProductController());
+      }),
+      home: const ProductListView(),
     );
   }
 }
