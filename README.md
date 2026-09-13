@@ -102,6 +102,8 @@ Search uses DummyJSON's server-side search endpoint:
 
 A **400ms debounce** prevents a request from being sent for every keystroke.
 
+The search query is encoded using Dart's `Uri.encodeQueryComponent()` before being appended to the URL. This safely handles spaces and special characters in user input and prevents them from interfering with the query string.
+
 When the search field is cleared, the app returns to the normal paginated product list.
 
 ### UI States
